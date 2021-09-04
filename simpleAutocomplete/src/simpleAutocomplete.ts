@@ -15,8 +15,13 @@ export class SimpleAutocomplete {
   constructor() {
     this.next = this.next.bind(this);
     this.reset = this.reset.bind(this);
-
-    this.reset();
+    this.state = {
+      needle: '',
+      nextIterator: undefined,
+      preventReset: false,
+      discardedMatches: [],
+      isActive: false,
+    };
   }
 
   public reset() {
@@ -80,7 +85,7 @@ export class SimpleAutocomplete {
 
       for (const token of tokensIterator) {
         if (
-          fuzzySearch(this.state.needle.toLowerCase(), token.toLowerCase()) &&
+          fuzzySearch(this.state.needle, token) &&
           this.state.discardedMatches.indexOf(token) === -1
         ) {
           this.state.discardedMatches.push(token);

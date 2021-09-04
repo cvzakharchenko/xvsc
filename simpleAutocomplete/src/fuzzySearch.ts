@@ -20,25 +20,18 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-export function fuzzySearch(needle: string, haystack: string) {
-  const hLen = haystack.length
-  const nLen = needle.length
-  if (nLen > hLen) {
-    return false
-  }
-  if (nLen === hLen) {
-    return needle === haystack
-  }
 
-  let j = 0
-  outer: for (let i = 0; i < nLen; i++) {
-    const nch = needle.charCodeAt(i)
-    while (j < hLen) {
-      if (haystack.charCodeAt(j++) === nch) {
-        continue outer
-      }
-    }
-    return false
+// "azzBzz_czz_DZZ_EZZ" -> "aBcDE"
+function abbreviate(word: string) {
+  const result1 = word.replace(RegExp("((?<=[a-zA-Z])[a-z_]|(?<=[A-Z])[A-Z])", "g"), "")
+  const result2 = word.replace(RegExp("(^[a-z]|(?<=[_])[a-zA-Z]|(?<=[a-z])[A-Z])|.", "g"), "$1")
+  if (result1 != result2) {
+    console.error("${word} abbreviation ${result1} != ${result2}");
   }
-  return true
+  return result1;
+}
+
+export function fuzzySearch(needle: string, haystack: string) {
+  const hay = abbreviate(haystack);
+  return hay.toLowerCase().startsWith(needle.toLowerCase());
 }
