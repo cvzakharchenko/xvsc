@@ -20,18 +20,20 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
+import {extensionLog} from './extensionLog'
 
 // "azzBzz_czz_DZZ_EZZ" -> "aBcDE"
 function abbreviate(word: string) {
-  const result1 = word.replace(RegExp("((?<=[a-zA-Z])[a-z_]|(?<=[A-Z])[A-Z])", "g"), "")
-  const result2 = word.replace(RegExp("(^[a-z]|(?<=[_])[a-zA-Z]|(?<=[a-z])[A-Z])|.", "g"), "$1")
-  if (result1 != result2) {
-    console.error("${word} abbreviation ${result1} != ${result2}");
-  }
-  return result1;
+  return word.replace(RegExp("((?<=[a-zA-Z])[a-z_]|(?<=[A-Z])[A-Z])", "g"), "");
 }
 
 export function fuzzySearch(needle: string, haystack: string) {
-  const hay = abbreviate(haystack);
-  return hay.toLowerCase().startsWith(needle.toLowerCase());
+  var hay = abbreviate(haystack);
+  extensionLog.appendLine(`abbreviate: ${haystack} -> ${hay}`);
+
+  needle = needle.toLowerCase();
+  haystack = haystack.toLowerCase();
+  hay = hay.toLowerCase();
+
+  return hay.startsWith(needle) || haystack.startsWith(needle);
 }
