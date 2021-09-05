@@ -28,7 +28,7 @@ describe('Simple Autocomplete', () => {
     const currentWord = document.getText(document.getWordRangeAtPosition(selection.end));
     assert(currentWord === 'someva');
 
-    await commands.executeCommand('simpleAutocomplete.next');
+    await commands.executeCommand('unabbreviate.next');
 
     const nextWord = document.getText(document.getWordRangeAtPosition(selection.end));
     assert(nextWord === 'somevak');
@@ -41,7 +41,7 @@ describe('Simple Autocomplete', () => {
     const currentWord = document.getText(document.getWordRangeAtPosition(selection.end));
     assert(currentWord === 'someva');
 
-    await commands.executeCommand('simpleAutocomplete.next');
+    await commands.executeCommand('unabbreviate.next');
 
     const nextWord = document.getText(document.getWordRangeAtPosition(selection.end));
     assert(nextWord === 'someva');
@@ -54,15 +54,15 @@ describe('Simple Autocomplete', () => {
     const _1 = document.getText(document.getWordRangeAtPosition(selection.end));
     assert(_1 === 'someva');
 
-    await commands.executeCommand('simpleAutocomplete.next');
+    await commands.executeCommand('unabbreviate.next');
     const _2 = document.getText(document.getWordRangeAtPosition(selection.end));
     assert(_2 === 'somevak');
 
-    await commands.executeCommand('simpleAutocomplete.next');
+    await commands.executeCommand('unabbreviate.next');
     const _3 = document.getText(document.getWordRangeAtPosition(selection.end));
     assert(_3 === 'someVariable');
 
-    await commands.executeCommand('simpleAutocomplete.next');
+    await commands.executeCommand('unabbreviate.next');
     const _4 = document.getText(document.getWordRangeAtPosition(selection.end));
     assert(_4 === 'someVariableFoo');
   });
@@ -74,10 +74,10 @@ describe('Simple Autocomplete', () => {
     const _1 = document.getText(document.getWordRangeAtPosition(selection.end));
     assert(_1 === 'someva');
 
-    await commands.executeCommand('simpleAutocomplete.next');
-    await commands.executeCommand('simpleAutocomplete.next');
-    await commands.executeCommand('simpleAutocomplete.next');
-    await commands.executeCommand('simpleAutocomplete.next');
+    await commands.executeCommand('unabbreviate.next');
+    await commands.executeCommand('unabbreviate.next');
+    await commands.executeCommand('unabbreviate.next');
+    await commands.executeCommand('unabbreviate.next');
 
     const _2 = document.getText(document.getWordRangeAtPosition(selection.end));
     assert(_2 === 'someva');
@@ -91,13 +91,13 @@ describe('Simple Autocomplete', () => {
     const _1 = document.getText(document.getWordRangeAtPosition(selection.end));
     assert(_1 === 'someva');
 
-    await commands.executeCommand('simpleAutocomplete.next');
+    await commands.executeCommand('unabbreviate.next');
     const _2 = document.getText(document.getWordRangeAtPosition(selection.end));
     assert(_2 === 'someva');
 
     textEditor.selection = new Selection(new Position(7, 35), new Position(7, 35));
 
-    await commands.executeCommand('simpleAutocomplete.next');
+    await commands.executeCommand('unabbreviate.next');
     const _3 = document.getText(document.getWordRangeAtPosition(selection.end));
     assert(_3 === 'somevak');
   });

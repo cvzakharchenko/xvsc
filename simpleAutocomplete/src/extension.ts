@@ -1,12 +1,12 @@
 import * as vscode from 'vscode'
 import {SimpleAutocomplete} from './simpleAutocomplete'
 
-export const simpleAutocomplete = new SimpleAutocomplete()
+export const unabbreviate = new SimpleAutocomplete()
 
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
-    vscode.commands.registerTextEditorCommand('simpleAutocomplete.next', simpleAutocomplete.next),
-    vscode.window.onDidChangeTextEditorSelection(simpleAutocomplete.reset),
-    vscode.workspace.onDidChangeTextDocument(simpleAutocomplete.reset),
+    vscode.commands.registerTextEditorCommand('unabbreviate.next', unabbreviate.next),
+    vscode.window.onDidChangeTextEditorSelection(unabbreviate.reset),
+    vscode.workspace.onDidChangeTextDocument(unabbreviate.reset),
   )
 }
