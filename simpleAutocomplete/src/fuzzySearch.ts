@@ -24,7 +24,7 @@ import {extensionLog} from './extensionLog'
 
 // "azzBzz_czz_DZZ_EZZ" -> "aBcDE"
 function abbreviate(word: string) {
-  return word.replace(RegExp("((?<=[a-zA-Z])[a-z_]|(?<=[A-Z])[A-Z])", "g"), "");
+  return word.replace(RegExp("((?<=[a-zA-Z])[a-z]|(?<=[A-Z])[A-Z]|_)", "g"), "");
 }
 
 export function fuzzySearch(needle: string, haystack: string) {
