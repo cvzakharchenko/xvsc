@@ -2,7 +2,7 @@
   "name": "unabbreviate",
   "displayName": "Unabbreviate (Expand Word)",
   "description": "Autocomplete based on surrounding words abbreviations",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "publisher": "cvzakharchenko",
   "engines": {
     "vscode": "^1.15.0"
@@ -20,7 +20,18 @@
         "command": "unabbreviate.next",
         "title": "Searches for the next result of Unabbreviate"
       }
-    ]
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Unabbreviate",
+      "properties": {
+        "unabbreviate.ignoreWordSeparators": {
+          "type": "string",
+          "default": "",
+          "description": "Characters to ignore from word separators when tokenizing text"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "tsc -p ./",

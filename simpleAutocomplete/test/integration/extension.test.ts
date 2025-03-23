@@ -3,7 +3,7 @@ import { window, Uri, Position, Selection, TextEditor, commands } from 'vscode';
 import * as assert from 'assert';
 import * as path from 'path';
 
-describe('Simple Autocomplete', () => {
+describe('Unabbreviate', () => {
   let textEditor: TextEditor;
 
   before(() => {

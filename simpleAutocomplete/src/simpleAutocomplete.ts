@@ -1,7 +1,8 @@
-import { TextEditor, workspace } from 'vscode';
+import { TextEditor, workspace, Range } from 'vscode';
 import { documentRippleScanner } from './documentRippleScanner';
 import { tokenizer } from './tokenizer';
 import { fuzzySearch } from './fuzzySearch';
+import {extensionLog} from './extensionLog';
 
 export class SimpleAutocomplete {
   private state: {
@@ -10,6 +11,7 @@ export class SimpleAutocomplete {
     preventReset: boolean;
     discardedMatches: string[];
     isActive: boolean;
+    wordRange: Range | undefined;
   };
 
   constructor() {
@@ -21,6 +23,7 @@ export class SimpleAutocomplete {
       preventReset: false,
       discardedMatches: [],
       isActive: false,
+      wordRange: undefined,
     };
   }
 
@@ -32,6 +35,7 @@ export class SimpleAutocomplete {
         preventReset: false,
         discardedMatches: [],
         isActive: false,
+        wordRange: undefined,
       };
     }
   }
@@ -40,16 +44,21 @@ export class SimpleAutocomplete {
     this.state.isActive = true;
 
     if (this.canAutocomplete(activeTextEditor)) {
+      extensionLog.appendLine('Can autocomplete');
+
       if (!this.state.nextIterator) {
+        extensionLog.appendLine('No iterator');
         this.state.nextIterator = this.nextGenerator(activeTextEditor);
       }
 
       const nextResult = this.state.nextIterator.next();
 
       if (nextResult.done) {
+        extensionLog.appendLine('Done');
         this.setMatch(this.state.needle, activeTextEditor).then(this.reset);
       }
     } else {
+      extensionLog.appendLine('Cannot autocomplete, resetting');
       this.reset();
     }
   }
@@ -71,6 +80,7 @@ export class SimpleAutocomplete {
   }
 
   private *nextGenerator(activeTextEditor: TextEditor) {
+    extensionLog.appendLine('nextGenerator');
     this.setNeedle(activeTextEditor);
 
     if (!this.state.needle) {
@@ -81,7 +91,8 @@ export class SimpleAutocomplete {
     const documentIterator = documentRippleScanner(document, selection.end.line);
     for (const line of documentIterator) {
       const wordSeparators = workspace.getConfiguration().editor.wordSeparators;
-      const tokensIterator = tokenizer(line.text, wordSeparators);
+      const ignoreWordSeparators = workspace.getConfiguration('unabbreviate').get('ignoreWordSeparators', '');
+      const tokensIterator = tokenizer(line.text, wordSeparators, ignoreWordSeparators);
 
       for (const token of tokensIterator) {
         if (
@@ -98,11 +109,17 @@ export class SimpleAutocomplete {
 
   private setNeedle(activeTextEditor: TextEditor) {
     const { document, selection } = activeTextEditor;
-    const needle = document.getText(document.getWordRangeAtPosition(selection.end));
 
-    if (typeof needle === 'string') {
-      this.state.discardedMatches.push(needle);
-      this.state.needle = needle;
+    // Initialize wordRange with the current word range
+    this.state.wordRange = document.getWordRangeAtPosition(selection.end);
+
+    if (this.state.wordRange) {
+      const needle = document.getText(this.state.wordRange);
+
+      if (typeof needle === 'string') {
+        this.state.discardedMatches.push(needle);
+        this.state.needle = needle;
+      }
     }
   }
 
@@ -112,15 +129,35 @@ export class SimpleAutocomplete {
     // Start from last selection so that edits don't alter the locations of previous selections
     for (let i = selections.length - 1; i >= 0; i--) {
       const selection = selections[i];
-      const wordRange = document.getWordRangeAtPosition(selection.end);
 
-      if (wordRange) {
+      // wordRange should already be set by setNeedle, but if not, initialize it
+      if (!this.state.wordRange) {
+        extensionLog.appendLine('wordRange was null');
+        this.state.wordRange = document.getWordRangeAtPosition(selection.end);
+      }
+
+
+      // At this point, wordRange should definitely exist
+      if (this.state.wordRange) {
+        extensionLog.appendLine(`old wordRange: ${this.state.wordRange.start.character}, ${this.state.wordRange.end.character}`);
         this.state.preventReset = true;
 
+        // Store the start position of the original range
+        const originalStartPosition = this.state.wordRange.start;
+
         await activeTextEditor.edit(editBuilder => {
-          editBuilder.delete(wordRange);
-          editBuilder.insert(selection.end, match);
+          editBuilder.delete(this.state.wordRange!);
+          editBuilder.insert(originalStartPosition, match);
         });
+
+        // Create a new range that encompasses the entire match
+        // The start position remains the same as the original word's start
+        // The end position is calculated by adding the match length to the start position
+        const endPosition = originalStartPosition.translate(0, match.length);
+
+        // Create a new range that covers the entire match
+        this.state.wordRange = new Range(originalStartPosition, endPosition);
+        extensionLog.appendLine(`new wordRange: ${this.state.wordRange.start.character}, ${this.state.wordRange.end.character}`);
 
         this.state.preventReset = false;
       }

@@ -1,3 +1,3 @@
 import {window} from 'vscode'
 
-export let extensionLog = window.createOutputChannel("Simple Autocomplete");
+export let extensionLog = window.createOutputChannel("Unabbreviate");
