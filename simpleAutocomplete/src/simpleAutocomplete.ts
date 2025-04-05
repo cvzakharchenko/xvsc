@@ -1,8 +1,10 @@
 import { TextEditor, workspace, Range } from 'vscode';
 import { documentRippleScanner } from './documentRippleScanner';
+import { recentDocumentsScanner } from './recentDocumentsScanner';
 import { tokenizer } from './tokenizer';
 import { fuzzySearch } from './fuzzySearch';
-import {extensionLog} from './extensionLog';
+import { extensionLog } from './extensionLog';
+import { join } from './iteratorUtils';
 
 export class SimpleAutocomplete {
   private state: {
@@ -88,7 +90,21 @@ export class SimpleAutocomplete {
     }
 
     const { document, selection } = activeTextEditor;
-    const documentIterator = documentRippleScanner(document, selection.end.line);
+
+    // Get the ripple scanner for the current document
+    let documentIterator: any = documentRippleScanner(document, selection.end.line);
+
+    // Check if we should also search in recent files
+    const searchInRecentFiles = workspace.getConfiguration('unabbreviate').get('recentFiles', false);
+    if (searchInRecentFiles) {
+      // Check if we should only search in files with the same language ID
+      const sameLanguageOnly = workspace.getConfiguration('unabbreviate').get('recentFilesSameLanguage', true);
+
+      // Join the ripple scanner with the recent documents scanner
+      documentIterator = join(documentIterator, recentDocumentsScanner(document, sameLanguageOnly));
+    }
+
+    // Process lines from all sources
     for (const line of documentIterator) {
       const wordSeparators = workspace.getConfiguration().editor.wordSeparators;
       const ignoreWordSeparators = workspace.getConfiguration('unabbreviate').get('ignoreWordSeparators', '');

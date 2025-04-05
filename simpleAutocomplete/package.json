@@ -2,7 +2,7 @@
   "name": "unabbreviate",
   "displayName": "Unabbreviate (Expand Word)",
   "description": "Autocomplete based on surrounding words abbreviations",
-  "version": "1.1.6",
+  "version": "1.2.0",
   "publisher": "cvzakharchenko",
   "engines": {
     "vscode": "^1.15.0"
@@ -29,6 +29,16 @@
           "type": "string",
           "default": "",
           "description": "Characters to ignore from word separators when tokenizing text"
+        },
+        "unabbreviate.recentFiles": {
+          "type": "boolean",
+          "default": false,
+          "description": "When enabled, searches for matches in recently opened files if no matches are found in the current file"
+        },
+        "unabbreviate.recentFilesSameLanguage": {
+          "type": "boolean",
+          "default": true,
+          "description": "When enabled, only searches in files with the same language ID as the current file"
         }
       }
     }
