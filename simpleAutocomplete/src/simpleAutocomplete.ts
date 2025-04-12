@@ -6,6 +6,25 @@ import { fuzzySearch } from './fuzzySearch';
 import { extensionLog } from './extensionLog';
 import { join } from './iteratorUtils';
 
+// Default regex pattern for abbreviation extraction
+const DEFAULT_ABBREVIATION_REGEX = "((?<![A-Z])[A-Z]|[A-Z](?=[a-z])|(?<![A-Za-z])[a-z])";
+
+function getAbbreviationPattern(): string {
+  const regexPattern = workspace.getConfiguration('unabbreviate').get('abbreviationRegex', '');
+
+  if (!regexPattern) {
+    return DEFAULT_ABBREVIATION_REGEX;
+  }
+
+  try {
+    new RegExp(regexPattern, "g");
+    return regexPattern;
+  } catch (error) {
+    extensionLog.appendLine(`Invalid regex pattern: ${regexPattern}. Error: ${error}. Using default.`);
+    return DEFAULT_ABBREVIATION_REGEX;
+  }
+}
+
 export class SimpleAutocomplete {
   private state: {
     needle: string;
@@ -90,6 +109,7 @@ export class SimpleAutocomplete {
     }
 
     const { document, selection } = activeTextEditor;
+    const regexPattern = getAbbreviationPattern();
 
     // Get the ripple scanner for the current document
     let documentIterator: any = documentRippleScanner(document, selection.end.line);
@@ -112,7 +132,7 @@ export class SimpleAutocomplete {
 
       for (const token of tokensIterator) {
         if (
-          fuzzySearch(this.state.needle, token) &&
+          fuzzySearch(this.state.needle, token, regexPattern) &&
           this.state.discardedMatches.indexOf(token) === -1
         ) {
           this.state.discardedMatches.push(token);

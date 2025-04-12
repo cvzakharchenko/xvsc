@@ -17,6 +17,7 @@ This extension adds one command:
 * `unabbreviate.ignoreWordSeparators`: Characters to ignore from word separators when tokenizing text
 * `unabbreviate.recentFiles`: When enabled, searches for matches in recently opened files if no matches are found in the current file
 * `unabbreviate.recentFilesSameLanguage`: When enabled (default), only searches in files with the same language ID as the current file
+* `unabbreviate.abbreviationRegex`: Regular expression used to extract abbreviations from words. Default extracts first letter of each word and capital letters in camelCase.
 
 ### How It Works
 

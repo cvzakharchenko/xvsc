@@ -23,12 +23,15 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import {extensionLog} from './extensionLog'
 
 // "azzBzz_czz_DZZ_EZZ" -> "aBcDE"
-function abbreviate(word: string) {
-  return word.replace(RegExp("([^a-zA-Z]|(?<=[a-zA-Z])[a-z]|(?<=[A-Z])[A-Z])", "g"), "");
+// "UIManager" -> "UM"
+function abbreviate(word: string, regexPattern: string) {
+  const regex = new RegExp(regexPattern, "g");
+  const matches = word.match(regex);
+  return matches ? matches.join("") : "";
 }
 
-export function fuzzySearch(needle: string, haystack: string) {
-  var hay = abbreviate(haystack);
+export function fuzzySearch(needle: string, haystack: string, regexPattern: string) {
+  var hay = abbreviate(haystack, regexPattern);
   extensionLog.appendLine(`abbreviate: ${haystack} -> ${hay}`);
 
   needle = needle.toLowerCase();

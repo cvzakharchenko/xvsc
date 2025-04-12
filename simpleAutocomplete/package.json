@@ -2,7 +2,7 @@
   "name": "unabbreviate",
   "displayName": "Unabbreviate (Expand Word)",
   "description": "Autocomplete based on surrounding words abbreviations",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "publisher": "cvzakharchenko",
   "engines": {
     "vscode": "^1.15.0"
@@ -39,6 +39,11 @@
           "type": "boolean",
           "default": true,
           "description": "When enabled, only searches in files with the same language ID as the current file"
+        },
+        "unabbreviate.abbreviationRegex": {
+          "type": "string",
+          "default": "",
+          "description": "Regular expression used to extract abbreviations from words. If empty, uses the default pattern that extracts first letter of each word and capital letters in camelCase."
         }
       }
     }
